@@ -1,0 +1,5 @@
+{"properties": [{
+  "name": "miko.supported.languages",
+  "type": "java.lang.String",
+  "description": "A description for 'miko.supported.languages'"
+}]}
