@@ -1,6 +1,4 @@
 package com.example.miko.Service;
-
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.example.miko.Handler.NotificationHandler;
@@ -10,39 +8,20 @@ import java.util.List;
 @Service
 public class LanguageService {
 
-    private final List<String> supportedLanguages;
-    private final NotificationHandler notificationHandler;
+    private final List<String> supportedLanguages = List.of("en", "fr", "es", "de", "it", "zh", "jp", "kr");
 
-    public LanguageService(
-            @Value("${miko.supported-languages}") List<String> supportedLanguages,
-            NotificationHandler notificationHandler) {
-        this.supportedLanguages = supportedLanguages;
-        this.notificationHandler = notificationHandler;
+    public boolean isLanguageSupported(String language) {
+        return supportedLanguages.contains(language);
     }
 
-    public boolean changeLanguage(String userId, String language) {
-        if (isSupportedLanguage(language)) {
-            try {
-                notificationHandler.sendLanguageChangeNotification(userId, language);
-                System.out.println("Language changed to " + language + " for user: " + userId);
-                return true;
-            } catch (Exception e) {
-                e.printStackTrace();
-                return false;
-            }
+    public void changeLanguage(String userId, String language, NotificationHandler notificationHandler) throws Exception {
+        if (isLanguageSupported(language)) {
+            notificationHandler.notifyUser(userId, "Language changed to " + language);
         } else {
-            System.out.println("Unsupported language: " + language);
-            return false;
+            throw new IllegalArgumentException("Unsupported language: " + language);
         }
     }
-
-    private boolean isSupportedLanguage(String language) {
-        return supportedLanguages.contains(language.toLowerCase());
-    }
-
-    public List<String> getSupportedLanguages() {
-        return supportedLanguages;
-    }
 }
+
 
 

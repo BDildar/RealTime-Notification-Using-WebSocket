@@ -1,26 +1,35 @@
 package com.example.miko.Controller;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.miko.Service.LanguageService;
+import com.example.miko.Handler.NotificationHandler;
+import com.example.miko.Service.NotificationService;
 
 @RestController
 @RequestMapping("/api/language")
 public class LanguageController {
 
-    @Autowired
-    private LanguageService languageService;
+    private final NotificationService notificationService;
+    private final NotificationHandler notificationHandler;
+
+    public LanguageController(NotificationService notificationService) {
+        this.notificationService = notificationService;
+		this.notificationHandler = new NotificationHandler();
+    }
 
     @PostMapping("/change")
-    public ResponseEntity<String> changeLanguage(@RequestParam String userId, @RequestParam String language) {
-        boolean success = languageService.changeLanguage(userId, language);
-        if (success) {
-            return ResponseEntity.ok("Language updated successfully");
-        } else {
-            return ResponseEntity.status(500).body("Failed to update language");
+    public void changeLanguage(@RequestParam String userId, @RequestParam String language) throws Exception {
+        notificationService.changeLanguage(userId, language);
+    }
+    
+    @PostMapping("/send-notification")
+    public String sendNotification(@RequestParam String userId, @RequestParam String message) {
+        try {
+            notificationHandler.notifyUser(userId, message);
+            return "Notification sent!";
+        } catch (Exception e) {
+            return "Error sending notification: " + e.getMessage();
         }
     }
 }
+
 
